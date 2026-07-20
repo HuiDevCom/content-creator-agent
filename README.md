@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./assets/readme/hero.svg" width="100%" alt="内容创作Agent — AI 内容创作工具，支持研究、大纲、写作、SEO">
+</p>
+
 # 内容创作Agent
 
 AI 驱动的内容创作工具，支持主题研究、结构化大纲生成、流式文章写作、SEO 分析与关键词建议，具备版本管理、持久记忆和 GitHub 登录用户隔离。基于 LangChain 和 Deep Agents 构建，部署在 EdgeOne Makers。
