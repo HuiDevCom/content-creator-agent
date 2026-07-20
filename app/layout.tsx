@@ -3,8 +3,8 @@ import "./globals.css";
 import { I18nProvider } from "@/lib/i18n";
 
 export const metadata: Metadata = {
-  title: "Content Creator Assistant",
-  description: "AI-powered content creation with research, writing, and SEO optimization",
+  title: "内容创作Agent",
+  description: "内容创作 AI Agent，支持联网搜索、主题研究、大纲生成、文章写作与 SEO 优化",
   icons: "/favicon.png",
 };
 
