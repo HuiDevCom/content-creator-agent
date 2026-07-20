@@ -1,0 +1,214 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1200" height="380" viewBox="0 0 1200 380"
+     role="img" aria-labelledby="hero-title hero-desc">
+  <title id="hero-title">内容创作Agent — AI Content Creator Agent</title>
+  <desc id="hero-desc">AI Agent that orchestrates content creation: research, outline generation, streaming article writing, review, SEO optimization, and publish. Built on LangChain and Deep Agents, deployed on EdgeOne Makers.</desc>
+
+  <defs>
+    <linearGradient id="bg-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F8F9FB"/>
+      <stop offset="100%" stop-color="#F0F2F5"/>
+    </linearGradient>
+    <linearGradient id="primary-grad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0c8ce9"/>
+      <stop offset="100%" stop-color="#36a6ff"/>
+    </linearGradient>
+    <linearGradient id="badge-bg" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0c8ce9" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#0c8ce9" stop-opacity="0.04"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="380" rx="24" fill="url(#bg-grad)"/>
+
+  <!-- Subtle grid pattern -->
+  <g opacity="0.03">
+    <line x1="0" y1="95" x2="1200" y2="95" stroke="#0c8ce9" stroke-width="0.5"/>
+    <line x1="0" y1="190" x2="1200" y2="190" stroke="#0c8ce9" stroke-width="0.5"/>
+    <line x1="0" y1="285" x2="1200" y2="285" stroke="#0c8ce9" stroke-width="0.5"/>
+    <line x1="240" y1="0" x2="240" y2="380" stroke="#0c8ce9" stroke-width="0.5"/>
+    <line x1="480" y1="0" x2="480" y2="380" stroke="#0c8ce9" stroke-width="0.5"/>
+    <line x1="720" y1="0" x2="720" y2="380" stroke="#0c8ce9" stroke-width="0.5"/>
+    <line x1="960" y1="0" x2="960" y2="380" stroke="#0c8ce9" stroke-width="0.5"/>
+  </g>
+
+  <!-- Separator vertical line -->
+  <line x1="540" y1="70" x2="540" y2="330" stroke="#D1D5DB" stroke-width="1" opacity="0.6"/>
+
+  <!-- ============ LEFT SIDE: TITLE BLOCK ============ -->
+  <g id="title-block" transform="translate(44 36)">
+
+    <!-- Category badge -->
+    <g id="badge">
+      <rect width="156" height="28" rx="14" fill="url(#badge-bg)"/>
+      <rect width="156" height="28" rx="14" fill="none" stroke="#0c8ce9" stroke-width="0.8" stroke-opacity="0.3"/>
+      <text x="78" y="18" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="11" font-weight="600" fill="#0c8ce9">AI Agent / Content</text>
+    </g>
+
+    <!-- Title -->
+    <text id="title-content" x="0" y="92" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,sans-serif" font-size="52" font-weight="800" fill="url(#primary-grad)" letter-spacing="-0.5">内容创作</text>
+    <text id="title-agent" x="260" y="92" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="48" font-weight="700" fill="#10B981" letter-spacing="-1">Agent</text>
+
+    <!-- Tagline -->
+    <text id="tagline" x="0" y="130" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,sans-serif" font-size="16" fill="#6B7280">
+      From idea to published article — AI orchestrates every step
+    </text>
+
+    <!-- Feature tags -->
+    <g id="features" transform="translate(0 162)">
+      <rect x="0" y="0" width="72" height="26" rx="13" fill="#0c8ce9" fill-opacity="0.08" stroke="#0c8ce9" stroke-width="0.8" stroke-opacity="0.3"/>
+      <text x="36" y="17" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,sans-serif" font-size="11" font-weight="600" fill="#0c8ce9">内容</text>
+
+      <rect x="82" y="0" width="72" height="26" rx="13" fill="#F3F4F6" stroke="#D1D5DB" stroke-width="1"/>
+      <text x="118" y="17" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,sans-serif" font-size="11" fill="#6B7280">创作</text>
+
+      <rect x="164" y="0" width="80" height="26" rx="13" fill="#10B981" fill-opacity="0.08" stroke="#10B981" stroke-width="0.8" stroke-opacity="0.3"/>
+      <text x="204" y="17" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="11" font-weight="600" fill="#10B981">Agent</text>
+    </g>
+
+    <!-- Metadata -->
+    <g id="metadata" transform="translate(0 214)">
+      <circle cx="6" cy="-4" r="3" fill="#10B981" opacity="0.7"/>
+      <text x="16" y="0" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" fill="#9CA3AF">v0.1.0</text>
+      <circle cx="88" cy="-4" r="3" fill="#0c8ce9" opacity="0.7"/>
+      <text x="98" y="0" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" fill="#9CA3AF">LangChain + Deep Agents</text>
+      <circle cx="284" cy="-4" r="3" fill="#D1D5DB"/>
+      <text x="294" y="0" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" fill="#9CA3AF">MIT License</text>
+    </g>
+
+    <!-- CTA -->
+    <g transform="translate(0 260)">
+      <rect x="0" y="0" width="156" height="30" rx="15" fill="#0c8ce9" fill-opacity="0.06"/>
+      <rect x="0" y="0" width="156" height="30" rx="15" fill="none" stroke="#0c8ce9" stroke-width="0.8" stroke-opacity="0.3"/>
+      <text x="78" y="20" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,sans-serif" font-size="12" font-weight="600" fill="#0c8ce9">输入主题 → 生成文章</text>
+    </g>
+  </g>
+
+  <!-- ============ RIGHT SIDE: AGENT PIPELINE ============ -->
+  <g id="pipeline-section">
+
+    <!-- Section header -->
+    <g transform="translate(578 40)">
+      <text font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="10" fill="#9CA3AF" letter-spacing="2.5">CONTENT CREATION PIPELINE</text>
+      <line x1="0" y1="14" x2="22" y2="14" stroke="#0c8ce9" stroke-width="1.5" opacity="0.4"/>
+    </g>
+
+    <!-- Row 1: Research → Outline → Writing -->
+    <g id="row-1">
+      <!-- Base connecting line -->
+      <line x1="690" y1="155" x2="970" y2="155" stroke="#E5E7EB" stroke-width="2"/>
+      <!-- Animated streaming line -->
+      <line x1="690" y1="155" x2="970" y2="155" stroke="#0c8ce9" stroke-width="2" stroke-dasharray="6 280" opacity="0.6">
+        <animate attributeName="stroke-dashoffset" from="0" to="-286" dur="2.5s" repeatCount="indefinite"/>
+      </line>
+
+      <!-- Arrows -->
+      <polygon points="780,148 788,155 780,162" fill="#D1D5DB"/>
+      <polygon points="950,148 958,155 950,162" fill="#D1D5DB"/>
+
+      <!-- Node: Research -->
+      <g id="node-1" transform="translate(620 123)">
+        <circle r="30" fill="#FFFFFF" stroke="#0c8ce9" stroke-width="2"/>
+        <text y="5" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,sans-serif" font-size="14" font-weight="600" fill="#0c8ce9">研</text>
+        <text y="52" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,sans-serif" font-size="11" font-weight="500" fill="#374151">Research</text>
+      </g>
+
+      <!-- Node: Outline -->
+      <g id="node-2" transform="translate(780 123)">
+        <circle r="30" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="2"/>
+        <text y="5" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,sans-serif" font-size="14" font-weight="600" fill="#9CA3AF">纲</text>
+        <text y="52" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,sans-serif" font-size="11" fill="#9CA3AF">Outline</text>
+      </g>
+
+      <!-- Node: Writing -->
+      <g id="node-3" transform="translate(940 123)">
+        <circle r="30" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="2"/>
+        <text y="5" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,sans-serif" font-size="14" font-weight="600" fill="#9CA3AF">写</text>
+        <text y="52" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,sans-serif" font-size="11" fill="#9CA3AF">Writing</text>
+      </g>
+    </g>
+
+    <!-- S-curve connector from Writing (top-right) to Review (bottom-left) -->
+    <path d="M 970 155 C 970 216, 620 216, 620 185" stroke="#E5E7EB" stroke-width="2" fill="none"/>
+    <!-- Animated S-curve streaming -->
+    <path d="M 970 155 C 970 216, 620 216, 620 185" stroke="#0c8ce9" stroke-width="2" stroke-dasharray="4 260" opacity="0.6" fill="none">
+      <animate attributeName="stroke-dashoffset" from="0" to="-264" dur="2s" begin="0.5s" repeatCount="indefinite"/>
+    </path>
+    <!-- Arrowhead for S-curve -->
+    <polygon points="614,183 620,193 626,183" fill="#D1D5DB"/>
+
+    <!-- Row 2: Review → SEO → Publish -->
+    <g id="row-2">
+      <line x1="650" y1="265" x2="1050" y2="265" stroke="#E5E7EB" stroke-width="2"/>
+      <line x1="650" y1="265" x2="1050" y2="265" stroke="#0c8ce9" stroke-width="2" stroke-dasharray="6 400" opacity="0.6">
+        <animate attributeName="stroke-dashoffset" from="0" to="-406" dur="3s" begin="1s" repeatCount="indefinite"/>
+      </line>
+
+      <!-- Arrows -->
+      <polygon points="780,258 788,265 780,272" fill="#D1D5DB"/>
+      <polygon points="950,258 958,265 950,272" fill="#D1D5DB"/>
+
+      <!-- Node: Review -->
+      <g id="node-4" transform="translate(620 235)">
+        <circle r="30" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="2"/>
+        <text y="5" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,sans-serif" font-size="14" font-weight="600" fill="#9CA3AF">审</text>
+        <text y="52" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,sans-serif" font-size="11" fill="#9CA3AF">Review</text>
+      </g>
+
+      <!-- Node: SEO -->
+      <g id="node-5" transform="translate(780 235)">
+        <circle r="30" fill="#FFFFFF" stroke="#D1D5DB" stroke-width="2"/>
+        <text y="5" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" font-weight="700" fill="#9CA3AF">SEO</text>
+        <text y="52" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,sans-serif" font-size="11" fill="#9CA3AF">Optimize</text>
+      </g>
+
+      <!-- Node: Publish ✓ -->
+      <g id="node-6" transform="translate(940 235)">
+        <circle r="30" fill="#FFFFFF" stroke="#10B981" stroke-width="2"/>
+        <text y="5" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,sans-serif" font-size="16" font-weight="700" fill="#10B981">✓</text>
+        <text y="52" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,sans-serif" font-size="11" fill="#10B981">Publish</text>
+      </g>
+    </g>
+
+    <!-- Animating streaming particles along the full pipeline path -->
+    <!-- Particle 1: along row 1 -->
+    <circle r="4" fill="#0c8ce9" filter="url(#glow)" opacity="1">
+      <animate attributeName="cx" values="650;780;940" dur="2.5s" repeatCount="indefinite"/>
+      <animate attributeName="cy" values="153;153;153" dur="2.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="1;1;0" dur="2.5s" repeatCount="indefinite"/>
+    </circle>
+    <!-- Particle 2: S-curve (delayed) -->
+    <circle r="4" fill="#0c8ce9" filter="url(#glow)" opacity="1">
+      <animate attributeName="cx" values="940;780;620" dur="2s" begin="0.5s" repeatCount="indefinite"/>
+      <animate attributeName="cy" values="153;210;265" dur="2s" begin="0.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="1;1;0" dur="2s" begin="0.5s" repeatCount="indefinite"/>
+    </circle>
+    <!-- Particle 3: along row 2 (delayed) -->
+    <circle r="4" fill="#0c8ce9" filter="url(#glow)" opacity="1">
+      <animate attributeName="cx" values="650;780;940" dur="3s" begin="1s" repeatCount="indefinite"/>
+      <animate attributeName="cy" values="265;265;265" dur="3s" begin="1s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="1;1;0" dur="3s" begin="1s" repeatCount="indefinite"/>
+    </circle>
+
+    <!-- Writing animation: pulsing text cursor near the Writing node -->
+    <g transform="translate(978 148)">
+      <rect x="0" y="0" width="2" height="14" rx="1" fill="#0c8ce9">
+        <animate attributeName="opacity" values="1;0;1" dur="0.8s" repeatCount="indefinite"/>
+      </rect>
+    </g>
+
+    <!-- Streaming indicator -->
+    <g transform="translate(578 310)">
+      <circle cx="3" cy="-3" r="2.5" fill="#10B981" opacity="0.7"/>
+      <text x="11" y="0" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="10" fill="#9CA3AF">
+        Streaming output<tspan fill="#10B981" opacity="0.8">.</tspan><tspan fill="#10B981" opacity="0.6">.</tspan><tspan fill="#10B981" opacity="0.4">.</tspan>
+      </text>
+    </g>
+
+  </g>
+</svg>
