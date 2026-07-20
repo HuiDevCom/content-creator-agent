@@ -577,7 +577,7 @@ function HomeInner() {
           </div>
           <div className="flex items-center gap-3">
             <DeployButtons
-              githubUrl="https://github.com/edgeone-pages-test/content-creator-agent"
+              githubUrl="https://github.com/HuiDevCom/content-creator-agent"
             />
             <TokenUsage inputTokens={tokenUsage.input} outputTokens={tokenUsage.output} />
             <LanguageToggle />
