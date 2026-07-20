@@ -522,20 +522,14 @@ function HomeInner() {
       <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/80 backdrop-blur-sm dark:border-gray-800 dark:bg-gray-950/80">
         <div className="mx-auto flex h-14 max-w-[1600px] items-center justify-between px-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-600 text-white">
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-              </svg>
-            </div>
+            <img src="/favicon.png" alt="logo" className="h-8 w-8" />
             <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
               {t.title}
             </h1>
           </div>
           <div className="flex items-center gap-3">
             <DeployButtons
-              templateSlug="content-creator-agent"
               githubUrl="https://github.com/edgeone-pages-test/content-creator-agent"
-              lang={locale}
             />
             <TokenUsage inputTokens={tokenUsage.input} outputTokens={tokenUsage.output} />
             <LanguageToggle />

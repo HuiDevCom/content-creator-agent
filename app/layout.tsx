@@ -5,6 +5,7 @@ import { I18nProvider } from "@/lib/i18n";
 export const metadata: Metadata = {
   title: "Content Creator Assistant",
   description: "AI-powered content creation with research, writing, and SEO optimization",
+  icons: "/favicon.png",
 };
 
 export default function RootLayout({
@@ -13,7 +14,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="zh">
       <body className="min-h-screen bg-gray-50 dark:bg-gray-950 antialiased">
         <I18nProvider>{children}</I18nProvider>
       </body>
