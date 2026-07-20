@@ -30,14 +30,14 @@ interface ArticleData {
     currentVersion: number;
 }
 
-const MANIFEST_CONV = 'articles-manifest';
+const MANIFEST_PREFIX = 'articles-manifest';
 
 /**
  * Read the latest manifest record (single record; newest history wins).
  */
-async function getManifest(store: any): Promise<string[]> {
+async function getManifest(store: any, manifestConv: string): Promise<string[]> {
     try {
-        const messages = await store.getMessages({ conversationId: MANIFEST_CONV, limit: 1, order: 'desc' });
+        const messages = await store.getMessages({ conversationId: manifestConv, limit: 1, order: 'desc' });
         if (messages.length > 0 && messages[0].content) {
             const data = typeof messages[0].content === 'string'
                 ? JSON.parse(messages[0].content)
@@ -52,9 +52,9 @@ async function getManifest(store: any): Promise<string[]> {
  * Persist a manifest snapshot by appending a new record. We never call
  * clearMessages — the latest record always represents the current state.
  */
-async function saveManifest(store: any, ids: string[]) {
+async function saveManifest(store: any, manifestConv: string, ids: string[]) {
     await store.appendMessage({
-        conversationId: MANIFEST_CONV,
+        conversationId: manifestConv,
         role: 'system',
         content: JSON.stringify(ids),
         metadata: { type: 'manifest', ts: new Date().toISOString() },
@@ -110,7 +110,8 @@ export async function onRequestPost(context: any) {
     // SOP B-37: request body comes from context.request.body (pre-parsed by runtime)
     const body: Record<string, any> = context.request?.body ?? {};
 
-    const { action } = body;
+    const { action, userId = 'default' } = body;
+    const MANIFEST_CONV = `${MANIFEST_PREFIX}-${userId}`;
 
     if (!store) {
         return createResponse({
@@ -122,7 +123,7 @@ export async function onRequestPost(context: any) {
     try {
         switch (action) {
             case 'list': {
-                const ids = await getManifest(store);
+                const ids = await getManifest(store, MANIFEST_CONV);
                 const articles: ArticleData[] = [];
                 for (const id of ids) {
                     const data = await getArticleById(store, id);
@@ -151,9 +152,9 @@ export async function onRequestPost(context: any) {
                     currentVersion: 0,
                 };
                 await appendArticleVersion(store, articleData);
-                const ids = await getManifest(store);
+                const ids = await getManifest(store, MANIFEST_CONV);
                 if (!ids.includes(id)) {
-                    await saveManifest(store, [id, ...ids]);
+                    await saveManifest(store, MANIFEST_CONV, [id, ...ids]);
                 }
                 logger.log('Saved article:', id, `(${wordCount} words)`);
                 return createResponse({ success: true, id });
@@ -192,8 +193,8 @@ export async function onRequestPost(context: any) {
                 const { id } = body;
                 if (!id) return createResponse({ error: 'Missing id' }, 400);
                 try { await store.clearMessages({ conversationId: `article-${id}` }); } catch {}
-                const ids = await getManifest(store);
-                await saveManifest(store, ids.filter((i: string) => i !== id));
+                const ids = await getManifest(store, MANIFEST_CONV);
+                await saveManifest(store, MANIFEST_CONV, ids.filter((i: string) => i !== id));
                 logger.log('Deleted article:', id);
                 return createResponse({ success: true });
             }

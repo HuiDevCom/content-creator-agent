@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { I18nProvider } from "@/lib/i18n";
+import { UserProvider } from "./lib/user-context";
 
 export const metadata: Metadata = {
   title: "内容创作Agent",
@@ -16,7 +17,7 @@ export default function RootLayout({
   return (
     <html lang="zh">
       <body className="min-h-screen bg-gray-50 dark:bg-gray-950 antialiased">
-        <I18nProvider>{children}</I18nProvider>
+        <UserProvider><I18nProvider>{children}</I18nProvider></UserProvider>
       </body>
     </html>
   );

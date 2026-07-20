@@ -32,6 +32,7 @@ interface ArticleHistoryProps {
   onAutoSaved: (savedId: string, savedVersions: ArticleVersion[]) => void;
   currentArticleId: string | null;
   onSaveError?: (message: string) => void;
+  userId?: string;
 }
 
 export function ArticleHistory({
@@ -43,6 +44,7 @@ export function ArticleHistory({
   onAutoSaved,
   currentArticleId,
   onSaveError,
+  userId = 'default',
 }: ArticleHistoryProps) {
   const { t } = useI18n();
   const [articles, setArticles] = useState<ArticleRecord[]>([]);
@@ -55,7 +57,7 @@ export function ArticleHistory({
       const res = await fetch('/articles', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'list' }),
+        body: JSON.stringify({ action: 'list', userId }),
       });
       const data = await res.json().catch(() => null);
       if (!res.ok || data?.error === 'BLOB_NOT_CONFIGURED') {
@@ -70,7 +72,7 @@ export function ArticleHistory({
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [userId]);
 
   useEffect(() => {
     fetchArticles();
@@ -90,7 +92,7 @@ export function ArticleHistory({
             const res = await fetch('/articles', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ action: 'addVersion', id: currentArticleId, content: currentContent }),
+              body: JSON.stringify({ action: 'addVersion', id: currentArticleId, content: currentContent, userId }),
             });
 
             if (!res.ok) {
@@ -132,6 +134,7 @@ export function ArticleHistory({
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 action: 'save',
+                userId,
                 article: { title, content: currentContent, keywords: currentKeywords, style: currentStyle, createdAt: new Date().toISOString() },
               }),
             });
@@ -173,7 +176,7 @@ export function ArticleHistory({
     }, 200);
 
     return () => clearTimeout(timer);
-  }, [shouldAutoSave, currentContent, currentKeywords, currentStyle, onAutoSaved, fetchArticles, currentArticleId]);
+  }, [fetchArticles, currentArticleId, userId]);
 
   const handleDelete = useCallback(
     async (id: string, e: React.MouseEvent) => {
@@ -182,12 +185,12 @@ export function ArticleHistory({
         await fetch('/articles', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'delete', id }),
+          body: JSON.stringify({ action: 'delete', id, userId }),
         });
         setArticles((prev) => prev.filter((a) => a.id !== id));
       } catch {}
     },
-    []
+    [userId]
   );
 
   const handleLoad = useCallback(

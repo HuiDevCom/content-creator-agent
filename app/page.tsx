@@ -16,6 +16,7 @@ import { LanguageToggle } from "@/components/ui/language-toggle";
 import { TokenUsage } from "@/components/ui/token-usage";
 import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
+import { useUser } from "./lib/user-context";
 
 export type StepStatus = "pending" | "active" | "done";
 export type Step = "research" | "outline" | "writing" | "review" | "refine";
@@ -45,6 +46,8 @@ export default function Home() {
 
 function HomeInner() {
   const { t, locale } = useI18n();
+  const { user, isLoading: userLoading, isAuthReady, login, logout } = useUser();
+  const userId = user?.id || 'default';
   const conversationId = useConversationId();
   const [content, setContent] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
@@ -91,7 +94,7 @@ function HomeInner() {
     fetch('/preferences', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'get', userId: 'default' }),
+      body: JSON.stringify({ action: 'get', userId }),
     })
       .then(r => r.ok ? r.json() : null)
       .then(data => {
@@ -103,7 +106,7 @@ function HomeInner() {
         }
       })
       .catch(() => {});
-  }, []);
+  }, [userId]);
 
   const updateStep = useCallback((step: Step, status: StepStatus) => {
     setSteps((prev) => ({ ...prev, [step]: status }));
@@ -363,7 +366,7 @@ function HomeInner() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             action: 'recordUsage',
-            userId: 'default',
+            userId,
             topic: params.topic,
             keywords: params.keywords,
             style: params.style,
@@ -533,10 +536,35 @@ function HomeInner() {
             />
             <TokenUsage inputTokens={tokenUsage.input} outputTokens={tokenUsage.output} />
             <LanguageToggle />
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-              <span className="inline-flex h-2 w-2 rounded-full bg-green-500" />
-              {t.poweredBy}
-            </div>
+            {user ? (
+              <div className="flex items-center gap-2">
+                <img
+                  src={user.avatar_url}
+                  alt={user.login}
+                  className="h-7 w-7 rounded-full"
+                />
+                <span className="hidden sm:inline text-sm text-gray-700 dark:text-gray-300">
+                  {user.name}
+                </span>
+                <button
+                  onClick={logout}
+                  className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                >
+                  {t.logout}
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={login}
+                disabled={!isAuthReady}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors disabled:opacity-50"
+              >
+                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 .5C5.73.5.5 5.74.5 12.02c0 5.1 3.29 9.42 7.86 10.96.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.3-1.7-1.3-1.7-1.06-.72.08-.71.08-.71 1.17.08 1.78 1.2 1.78 1.2 1.04 1.78 2.73 1.27 3.4.97.1-.75.41-1.27.74-1.56-2.56-.29-5.26-1.28-5.26-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.1 11.1 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.43-2.7 5.41-5.27 5.69.42.36.8 1.08.8 2.18v3.23c0 .31.21.67.8.56A11.53 11.53 0 0 0 23.5 12.02C23.5 5.74 18.27.5 12 .5z" />
+                </svg>
+                {t.loginWithGitHub}
+              </button>
+            )}
           </div>
         </div>
       </header>
@@ -624,6 +652,7 @@ function HomeInner() {
               onAutoSaved={handleAutoSaved}
               currentArticleId={currentArticleId}
               onSaveError={handleSaveError}
+              userId={userId}
             />
           </main>
 

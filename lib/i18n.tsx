@@ -123,6 +123,10 @@ export const translations = {
     requestFailed: '请求失败',
     generationFailed: '生成失败，请重试',
     blobNotConfigured: '当前环境存储服务不可用，文章历史与偏好记忆已禁用。部署到 EdgeOne Makers 后将自动启用，无需配置任何环境变量。',
+    loginWithGitHub: '使用 GitHub 登录',
+    loggingIn: '登录中...',
+    logout: '退出登录',
+    loginRequired: '请先登录以使用文章保存功能',
   },
   en: {
     title: 'Content Creator Agent',
@@ -242,6 +246,10 @@ export const translations = {
     requestFailed: 'Request failed',
     generationFailed: 'Generation failed, please retry',
     blobNotConfigured: 'Storage is unavailable in this environment. Article history and preferences are disabled. Deploy to EdgeOne Makers to enable them automatically — no environment variables required.',
+    loginWithGitHub: 'Login with GitHub',
+    loggingIn: 'Logging in...',
+    logout: 'Logout',
+    loginRequired: 'Please login to save articles',
   },
 };
 
