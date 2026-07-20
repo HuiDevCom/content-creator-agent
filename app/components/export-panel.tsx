@@ -113,6 +113,23 @@ export function ExportPanel({ content }: ExportPanelProps) {
     showToast(t.downloadMd);
   }, [content, showToast, t.downloadMd]);
 
+  const handleDownloadHtml = useCallback(() => {
+    const html = markdownToHtml(content);
+    const fullHtml = `<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Article</title><style>body{max-width:800px;margin:0 auto;padding:20px;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;line-height:1.7;color:#333}img{max-width:100%}pre{background:#f5f5f5;padding:12px;border-radius:6px;overflow-x:auto}code{background:#f0f0f0;padding:2px 5px;border-radius:3px}pre code{background:none;padding:0}blockquote{border-left:3px solid #ddd;margin:0;padding-left:16px;color:#666}</style></head><body>${html}</body></html>`;
+    const firstLine = content.split('\n').find((l) => l.trim()) || 'article';
+    const filename = firstLine.replace(/^#+\s*/, '').replace(/[^a-zA-Z0-9\u4e00-\u9fff]/g, '_').slice(0, 50) + '.html';
+    const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast(t.downloadHtml);
+  }, [content, showToast, t.downloadHtml]);
+
   return (
     <Card className="mt-4 relative">
       {toast && (
@@ -145,6 +162,12 @@ export function ExportPanel({ content }: ExportPanelProps) {
             <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
           </svg>
           {t.downloadMd}
+        </Button>
+        <Button variant="outline" size="sm" onClick={handleDownloadHtml}>
+          <svg className="mr-1.5 h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+          </svg>
+          {t.downloadHtml}
         </Button>
       </div>
     </Card>
