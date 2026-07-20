@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useConversationId } from "@/app/lib/conversation-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
@@ -141,32 +140,53 @@ export function TopicForm({ onGenerate, onStop, isGenerating, preferences }: Top
             </div>
           )}
 
-          <Select
-            id="style"
-            label={t.style}
-            value={style}
-            onChange={(e) => setStyle(e.target.value)}
-            disabled={isGenerating}
-            options={[
-              { value: "informative", label: t.styleOptions.informative },
-              { value: "persuasive", label: t.styleOptions.persuasive },
-              { value: "technical", label: t.styleOptions.technical },
-              { value: "casual", label: t.styleOptions.casual },
-            ]}
-          />
+          <div className="space-y-1.5">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              {t.style}
+            </label>
+            <div className="flex rounded-lg border border-gray-200 dark:border-gray-700 p-0.5">
+              {(["informative", "persuasive", "technical", "casual"] as const).map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => setStyle(s)}
+                  disabled={isGenerating}
+                  className={cn(
+                    "flex-1 px-2 py-1.5 text-xs font-medium rounded-md transition-colors",
+                    style === s
+                      ? "bg-brand-600 text-white shadow-sm"
+                      : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200"
+                  )}
+                >
+                  {t.styleOptions[s]}
+                </button>
+              ))}
+            </div>
+          </div>
 
-          <Select
-            id="length"
-            label={t.length}
-            value={length}
-            onChange={(e) => setLength(e.target.value)}
-            disabled={isGenerating}
-            options={[
-              { value: "short", label: t.lengthOptions.short },
-              { value: "medium", label: t.lengthOptions.medium },
-              { value: "long", label: t.lengthOptions.long },
-            ]}
-          />
+          <div className="space-y-1.5">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              {t.length}
+            </label>
+            <div className="flex rounded-lg border border-gray-200 dark:border-gray-700 p-0.5">
+              {(["short", "medium", "long"] as const).map((l) => (
+                <button
+                  key={l}
+                  type="button"
+                  onClick={() => setLength(l)}
+                  disabled={isGenerating}
+                  className={cn(
+                    "flex-1 px-2 py-1.5 text-xs font-medium rounded-md transition-colors",
+                    length === l
+                      ? "bg-brand-600 text-white shadow-sm"
+                      : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200"
+                  )}
+                >
+                  {t.lengthOptions[l]}
+                </button>
+              ))}
+            </div>
+          </div>
 
           <div className="space-y-1.5">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
