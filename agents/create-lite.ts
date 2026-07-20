@@ -2,9 +2,9 @@
  * Content Creation Agent — Lite Mode
  * Low-token alternative using direct bindTools loop.
  */
-import { initChatModel, tool } from 'langchain';
+import { initChatModel } from 'langchain';
 import { HumanMessage, AIMessage, ToolMessage as LCToolMessage } from '@langchain/core/messages';
-import { getAgentEnv, createModel, createLogger, sseEvent, createSSEResponse } from './_shared';
+import { getAgentEnv, createModel, createLogger, sseEvent, createSSEResponse, resolveTools } from './_shared';
 
 type Model = Awaited<ReturnType<typeof initChatModel>>;
 
@@ -46,13 +46,9 @@ RULES:
   - "long" ≈ 5000 Chinese characters OR 4000 English words, 10-15 sections
 - IMPORTANT: Do NOT write less than the target length.`;
 
-async function* eventStream(modelInstance: Model, userMessage: string, contextTools: any, signal?: AbortSignal): AsyncGenerator<string> {
+async function* eventStream(modelInstance: Model, userMessage: string, tools: any[], signal?: AbortSignal): AsyncGenerator<string> {
     let totalInputTokens = 0;
     let totalOutputTokens = 0;
-
-    // SOP: LangGraph/DeepAgents use toLangChainTools(toolFactory) to get LangChain StructuredTool[]
-    // all() returns raw {name,schema,invoke} — needs LangChain tool() wrapper
-    const tools: any[] = contextTools?.toLangChainTools?.(tool) ?? [];
 
     try {
         logger.log(`Starting: "${userMessage.slice(0, 80)}"`);
@@ -223,12 +219,15 @@ export async function onRequest(context: any) {
 
     const signal = request?.signal as AbortSignal | undefined;
     let modelInstance: Model;
+    let envVars: ReturnType<typeof getAgentEnv>;
     try {
-        modelInstance = await createModel(getAgentEnv(env));
+        envVars = getAgentEnv(env);
+        modelInstance = await createModel(envVars);
     } catch (e) {
         return new Response(JSON.stringify({ error: (e as Error).message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
     }
 
-    const generator = (s?: AbortSignal) => eventStream(modelInstance, userMessage, contextTools, s);
+    const resolvedTools = resolveTools(contextTools, envVars);
+    const generator = (s?: AbortSignal) => eventStream(modelInstance, userMessage, resolvedTools, s);
     return createSSEResponse(generator, signal);
 }

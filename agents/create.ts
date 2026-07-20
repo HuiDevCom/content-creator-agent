@@ -2,9 +2,9 @@
  * Content Creation Agent — DeepAgent Mode
  * Full agent framework with memory, structured prompts, and real web search.
  */
-import { initChatModel, tool } from 'langchain';
+import { initChatModel } from 'langchain';
 import { HumanMessage, AIMessage, ToolMessage as LCToolMessage } from '@langchain/core/messages';
-import { getAgentEnv, createModel, createLogger, sseEvent, createSSEResponse } from './_shared';
+import { getAgentEnv, createModel, createLogger, sseEvent, createSSEResponse, resolveTools } from './_shared';
 
 type Model = Awaited<ReturnType<typeof initChatModel>>;
 
@@ -142,13 +142,9 @@ function buildSystemPrompt(memory: UserMemory | null, articleLength: string): st
 // ============================================================
 // Core Stream
 // ============================================================
-async function* generateStream(modelInstance: Model, userMessage: string, systemPrompt: string, contextTools: any, signal?: AbortSignal): AsyncGenerator<string> {
+async function* generateStream(modelInstance: Model, userMessage: string, systemPrompt: string, tools: any[], signal?: AbortSignal): AsyncGenerator<string> {
     let totalInputTokens = 0;
     let totalOutputTokens = 0;
-
-    // SOP: LangGraph/DeepAgents use toLangChainTools(tool) — returns LangChain StructuredTool[]
-    // all() returns raw {name,schema,invoke} which is not StructuredTool
-    const tools: any[] = contextTools?.toLangChainTools?.(tool) ?? [];
 
     try {
         logger.log(`Starting: "${userMessage.slice(0, 80)}"`);
@@ -295,16 +291,20 @@ export async function onRequest(context: any) {
     const systemPrompt = buildSystemPrompt(memory, length);
 
     let modelInstance: Model;
+    let envVars: ReturnType<typeof getAgentEnv>;
     try {
-        modelInstance = await createModel(getAgentEnv(env));
+        envVars = getAgentEnv(env);
+        modelInstance = await createModel(envVars);
     } catch (e) {
         return new Response(JSON.stringify({ error: (e as Error).message }), {
             status: 500, headers: { 'Content-Type': 'application/json; charset=UTF-8' },
         });
     }
 
+    const resolvedTools = resolveTools(contextTools, envVars);
+
     const generator = (s?: AbortSignal) => {
-        const g = generateStream(modelInstance, userMessage, systemPrompt, contextTools, s);
+        const g = generateStream(modelInstance, userMessage, systemPrompt, resolvedTools, s);
         // wrap: append [DONE] and fire-and-forget recordUsage
         return (async function* () {
             try {

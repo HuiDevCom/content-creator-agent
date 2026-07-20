@@ -2,10 +2,10 @@
  * Research Agent
  * Researches topics using web search and provides structured summaries.
  */
-import { initChatModel, AIMessageChunk, ToolMessage, tool } from 'langchain';
+import { initChatModel, AIMessageChunk, ToolMessage } from 'langchain';
 import { modelRetryMiddleware, modelCallLimitMiddleware } from 'langchain';
 import { createDeepAgent } from 'deepagents';
-import { getAgentEnv, createModel, createLogger, sseEvent, createSSEResponse } from './_shared';
+import { getAgentEnv, createModel, createLogger, sseEvent, createSSEResponse, resolveTools } from './_shared';
 
 /**
  * Strip DSML/tool-call markup that sometimes leaks into DeepSeek model output.
@@ -31,15 +31,13 @@ Use the web_search tool to find relevant information, then synthesize it into a 
 - Sources referenced`;
 
 let agent: Agent | null = null;
-let lastContextTools: any = null;
+let lastToolsKey: string | null = null;
 
-function getAgent(modelInstance: Model, contextTools: any) {
-    // Recreate agent if context.tools changed
-    if (!agent || lastContextTools !== contextTools) {
-        lastContextTools = contextTools;
-        // SOP: DeepAgents use toLangChainTools(tool) — returns LangChain StructuredTool[]
-        // all() returns raw {name,schema,invoke} which is not StructuredTool
-        const tools = contextTools?.toLangChainTools?.(tool) ?? [];
+function getAgent(modelInstance: Model, tools: any[]) {
+    const toolsKey = tools.map((t: any) => t.name).join(',');
+    // Recreate agent if tools changed
+    if (!agent || lastToolsKey !== toolsKey) {
+        lastToolsKey = toolsKey;
         agent = createDeepAgent({
             model: modelInstance,
             systemPrompt: SYSTEM_PROMPT,
@@ -104,7 +102,8 @@ export async function onRequest(context: any) {
     try {
         const envVars = getAgentEnv(env);
         const modelInstance = await createModel(envVars);
-        agentInstance = getAgent(modelInstance, contextTools);
+        const resolvedTools = resolveTools(contextTools, envVars);
+        agentInstance = getAgent(modelInstance, resolvedTools);
     } catch (e) {
         return new Response(JSON.stringify({ error: (e as Error).message }), {
             status: 500, headers: { 'Content-Type': 'application/json; charset=UTF-8' },
