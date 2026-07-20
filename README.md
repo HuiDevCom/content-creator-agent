@@ -1,99 +1,119 @@
-# Content Creator Agent
+# 内容创作Agent
 
-AI-driven content creation tool that researches topics, generates structured outlines, and writes streaming articles with SEO analysis, version management, and persistent memory. Built on LangChain and Deep Agents, deployed on EdgeOne Makers.
+AI 驱动的内容创作工具，支持主题研究、结构化大纲生成、流式文章写作、SEO 分析与关键词建议，具备版本管理、持久记忆和 GitHub 登录用户隔离。基于 LangChain 和 Deep Agents 构建，部署在 EdgeOne Makers。
 
 **Framework:** Deep Agents · **Category:** Content · **Language:** TypeScript
 
-## Overview
+## 概述
 
-This template orchestrates a full content creation pipeline — from topic research to polished article — through a multi-stage agent workflow. It uses LangChain-powered agents with structured prompts, accumulates user preferences across sessions, and stores article versions for retrieval and comparison.
+本模板通过多阶段 Agent 工作流，将内容创作的全流程——从主题研究到成稿润色——编排为一条完整管线。它使用基于 LangChain 的 Agent 与结构化提示词，跨会话积累用户偏好，并存储文章版本以供检索与对比。
 
-- **Topic Research** — Searches the web once per request for background material before writing. Supports both WSA and Kimi search providers.
-- **Structured Outlining** — Generates a hierarchical outline with `##` sections and `###` subsections before drafting.
-- **Streaming Article Writing** — Produces the full article in a single streaming run with word-count targets and style adherence.
-- **SEO & Keyword Tools** — Dedicated endpoints for SEO optimization and keyword suggestions.
-- **Persistent Memory** — Tracks user preferences (style, length, tone, recent topics) across articles via conversation-scoped message storage.
-- **Version Management** — Saves each generated article as a versioned record with title, content, and metadata.
+- **GitHub 登录** — 集成 GitHub OAuth，不同用户的文章数据自动隔离
+- **主题研究** — 每次请求执行一次联网搜索，获取写作背景材料。支持 WSA 和 Kimi 两种搜索提供商
+- **结构化大纲** — 在正式起草前生成带有 `##` 章节和 `###` 子章节的层级大纲
+- **流式文章写作** — 在单次流式运行中产出完整文章，遵循字数目标与风格要求
+- **SEO 与关键词工具** — 提供专门的 SEO 优化和关键词建议端点
+- **持久记忆** — 通过对话级消息存储，跨文章追踪用户偏好（风格、长度、语气、近期主题）
+- **版本管理** — 将每篇生成的文章保存为带标题、内容和元数据的版本化记录
 
-## Environment Variables
+## 环境变量
 
-| Variable | Required | Description |
+| 变量 | 必填 | 说明 |
 |----------|----------|-------------|
-| `AI_GATEWAY_API_KEY` | Yes | Model gateway API key. Use your Makers Models API Key, or any OpenAI-compatible provider key. |
-| `AI_GATEWAY_BASE_URL` | Yes | Gateway base URL. For Makers Models, use `https://ai-gateway.edgeone.link/v1`. |
-| `AI_GATEWAY_MODEL` | No | Model ID. Defaults to `@makers/deepseek-v4-flash`. |
-| `SEARCH_PROVIDER` | No | Web search provider. `wsa` (Tencent Cloud WSA, default) or `kimi` (Kimi `$web_search`). |
-| `KIMI_API_KEY` | No | Kimi API key. Required when `SEARCH_PROVIDER=kimi`. |
+| `AI_GATEWAY_API_KEY` | 是 | 模型网关 API Key。使用 Makers Models 的 API Key，或任何兼容 OpenAI 协议的提供商 Key。 |
+| `AI_GATEWAY_BASE_URL` | 是 | 网关基础地址。使用 Makers Models 时填写 `https://ai-gateway.edgeone.link/v1`。 |
+| `AI_GATEWAY_MODEL` | 否 | 模型 ID，默认为 `@makers/deepseek-v4-flash`。 |
+| `SEARCH_PROVIDER` | 否 | 联网搜索提供商。`wsa`（腾讯云 WSA，默认）或 `kimi`（Kimi `$web_search`）。 |
+| `KIMI_API_KEY` | 否 | Kimi API Key。`SEARCH_PROVIDER=kimi` 时必填。 |
+| `GITHUB_CLIENT_ID` | 否 | GitHub OAuth App 的 Client ID，用于用户登录和文章数据隔离。 |
+| `GITHUB_CLIENT_SECRET` | 否 | GitHub OAuth App 的 Client Secret。 |
 
-This template follows the OpenAI-compatible standard — point these at Makers Models or any compatible provider.
+本模板遵循 OpenAI 兼容标准 —— 可指向 Makers Models 或任何兼容提供商。
 
-### How to get AI_GATEWAY_API_KEY
+### 如何获取 AI_GATEWAY_API_KEY
 
-1. Open the Makers Console (https://edgeone.ai/makers/new?s_url=https://console.tencentcloud.com/edgeone/makers)
-2. Sign in and enable Makers
-3. Go to Makers → Models → API Key and create a key
-4. Copy it into `AI_GATEWAY_API_KEY`
+1. 打开 Makers 控制台（https://edgeone.ai/makers/new?s_url=https://console.tencentcloud.com/edgeone/makers）
+2. 登录并启用 Makers
+3. 进入 Makers → Models → API Key，创建 Key
+4. 将其填入 `AI_GATEWAY_API_KEY`
 
-> Built-in models are free within quota and great for validation. For production, bind your own paid provider key (BYOK).
+> 内置模型在额度内免费，适合验证；生产环境请绑定自费厂商 Key（BYOK）。
 
-## Project Structure
+## 项目结构
 
 ```
 content-creator-agent/
 ├── agents/
-│   ├── _shared.ts          # Model init, env validation, SSE helpers, search provider
-│   ├── create.ts           # POST /create — full article creation with memory
-│   ├── create-lite.ts      # POST /create-lite — lightweight mode
-│   ├── outline.ts          # POST /outline — structured outline generation
-│   ├── refine.ts           # POST /refine — article polishing
-│   ├── research.ts         # POST /research — topic background research
-│   ├── optimize.ts         # POST /optimize — SEO optimization
-│   ├── suggest-keywords.ts # POST /suggest-keywords
+│   ├── _shared.ts          # 模型初始化、环境校验、SSE 辅助函数、搜索提供商
+│   ├── create.ts           # POST /create —— 完整文章创作（带记忆）
+│   ├── create-lite.ts      # POST /create-lite —— 轻量模式
+│   ├── outline.ts          # POST /outline —— 结构化大纲生成
+│   ├── refine.ts           # POST /refine —— 文章润色
+│   ├── research.ts         # POST /research —— 主题背景研究
+│   ├── optimize.ts         # POST /optimize —— SEO 优化
+│   ├── suggest-keywords.ts # POST /suggest-keywords —— 关键词建议
 │   ├── test.ts             # POST /test
-│   └── stop.ts             # POST /stop — abort active run
+│   └── stop.ts             # POST /stop —— 中止运行
 ├── cloud-functions/
-│   ├── articles/           # Article version persistence
-│   ├── preferences/        # User preference storage
+│   ├── auth/github.ts      # GitHub OAuth 令牌交换与用户信息获取
+│   ├── articles/           # 文章版本持久化（按 userId 隔离）
+│   ├── preferences/        # 用户偏好存储（按 userId 隔离）
 │   ├── health/             # GET /health
 │   └── _logger.ts
-├── app/                    # Next.js App Router frontend
-├── components/             # Shared UI components
+├── app/                    # Next.js App Router 前端
+│   ├── components/
+│   │   ├── topic-form.tsx, article-editor.tsx, ...
+│   │   └── article-history.tsx  # 文章历史（传递 userId）
+│   └── lib/
+│       ├── user-context.tsx     # GitHub 用户状态管理
+│       └── conversation-context.tsx  # 会话 ID
+├── components/             # 通用 UI 组件
 ├── lib/
-│   └── i18n.tsx            # Chinese / English translations
-├── proxy.ts                # Next.js middleware for conversation ID
-└── edgeone.json            # EdgeOne deployment config
+│   └── i18n.tsx            # 中 / 英翻译
+├── proxy.ts                # Next.js 中间件，注入会话 ID
+└── edgeone.json            # EdgeOne 部署配置
 ```
 
-Files prefixed with `_` are private modules — not exposed as public routes.
+以 `_` 为前缀的文件是私有模块，不会作为公共路由暴露。
 
-## How It Works
+## 工作原理
 
-### Runtime Mode
-Files under `agents/` run in **session mode**: requests with the same `conversation_id` are sticky-routed to the same agent instance. This ensures user memory and conversation context persist across follow-up messages.
+### 运行模式
+`agents/` 下的文件以**会话模式**运行：相同 `conversation_id` 的请求会被粘性路由到同一 Agent 实例。这保证了用户记忆和对话上下文在后续消息中始终可用。
 
-### End-to-End Workflow
+### 端到端流程
 
-1. **Input collection** — The frontend POSTs `/create` with topic, keywords, style, length, and optional reference material.
-2. **Memory load** — The agent loads previously stored user preferences (style, tone, avoid-patterns) from conversation-scoped message storage.
-3. **Research (optional)** — A single web search is executed via the configured search provider (WSA or Kimi) to gather background material.
-4. **Outline generation** — An outline agent produces a structured hierarchy (`##` sections with `###` subsections) tailored to the requested length.
-5. **Article drafting** — The create agent streams the full article in one run, respecting the outline, word-count target, and loaded user preferences.
-6. **Post-processing** — The article can be refined (`/refine`), SEO-optimized (`/optimize`), or keyword-analyzed (`/suggest-keywords`) in separate calls.
-7. **Persistence** — The final article is saved as a versioned record via `cloud-functions/articles/`; user preferences are updated via `cloud-functions/preferences/`.
+1. **输入收集** —— 前端 POST `/create`，携带主题、关键词、风格、长度和可选参考资料。
+2. **记忆加载** —— Agent 从对话级消息存储中加载先前保存的用户偏好（风格、语气、需避免的模式）。
+3. **研究（可选）** —— 通过配置的搜索提供商（WSA 或 Kimi）执行一次联网搜索，收集背景材料。
+4. **大纲生成** —— 大纲 Agent 根据请求长度产出结构化层级（`##` 章节含 `###` 子章节）。
+5. **文章起草** —— 创建 Agent 在单次流式运行中产出完整文章，遵循大纲、字数目标和已加载的用户偏好。
+6. **后处理** —— 文章可通过 `/refine` 润色、`/optimize` SEO 优化或 `/suggest-keywords` 关键词分析进行单独调用处理。
+7. **持久化** —— 最终文章通过 `cloud-functions/articles/` 保存为版本化记录（按 `userId` 隔离）；用户偏好通过 `cloud-functions/preferences/` 更新。
 
-### Key Routes & Parameters
-- `/create` — Full article creation. Body: `{ topic, keywords, style, length, language }`.
-- `/create-lite` — Lightweight mode with fewer parameters.
-- `/outline` — Generates an outline only.
-- `/refine` — Polishes an existing article.
-- `/optimize` — SEO analysis and suggestions.
-- `/suggest-keywords` — Keyword recommendations.
-- `/stop` — Aborts the active run. Body: `{ conversation_id }`.
-- `conversation_id` is generated client-side and forwarded via the `makers-conversation-id` header; the runtime auto-binds it to `context.conversation_id`.
+### GitHub 登录
 
-### Timeouts
-No custom agent timeout is configured in `edgeone.json`; the platform default applies. The model client uses a 300-second internal timeout.
+用户点击 Header 的"使用 GitHub 登录"按钮后：
+1. 前端通过 `/auth/github` 获取 `client_id`，跳转到 GitHub 授权页
+2. GitHub 回调到应用地址，URL 携带 `?code=xxx`
+3. `UserProvider` 自动捕获 `code` 参数，调用 `/auth/github` 交换令牌
+4. 后端用 `client_id` + `client_secret` 向 GitHub 获取 `access_token`，再请求用户信息
+5. 用户信息持久化到 `localStorage`，后续请求的 `userId` 均为 GitHub 用户 ID
 
-## License
+### 关键路由与参数
+- `/auth/github` —— `{ action: "getClientId" }` 返回 `client_id`；`{ code: "xxx" }` 交换令牌返回用户信息
+- `/create` —— 完整文章创作。Body：`{ topic, keywords, style, length, language }`。
+- `/create-lite` —— 轻量模式，参数更少。
+- `/outline` —— 仅生成大纲。
+- `/refine` —— 润色已有文章。
+- `/optimize` —— SEO 分析与建议。
+- `/suggest-keywords` —— 关键词推荐。
+- `/stop` —— 中止活跃运行。Body：`{ conversation_id }`。
+- `conversation_id` 由前端生成，通过 `makers-conversation-id` Header 传入；运行时会自动绑定到 `context.conversation_id`。
+
+### 超时配置
+`edgeone.json` 中未自定义 Agent 超时，使用平台默认值。模型客户端内部超时为 300 秒。
+
+## 许可证
 
 MIT
