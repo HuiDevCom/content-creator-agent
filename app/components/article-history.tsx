@@ -51,6 +51,7 @@ export function ArticleHistory({
   const [isLoading, setIsLoading] = useState(true);
   const [savedToast, setSavedToast] = useState(false);
   const [blobError, setBlobError] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const fetchArticles = useCallback(async () => {
     try {
@@ -75,8 +76,11 @@ export function ArticleHistory({
   }, [userId]);
 
   useEffect(() => {
+    setIsLoading(true);
     fetchArticles();
-  }, [fetchArticles]);
+  }, [fetchArticles, refreshKey]);
+
+  const triggerRefresh = useCallback(() => setRefreshKey(k => k + 1), []);
 
   // Auto-save: create new article or add version to existing
   useEffect(() => {
@@ -115,7 +119,7 @@ export function ArticleHistory({
 
             setSavedToast(true);
             setTimeout(() => setSavedToast(false), 2000);
-            await fetchArticles();
+            triggerRefresh();
 
             const articleRes = await fetch('/articles', {
               method: 'POST',
@@ -159,7 +163,7 @@ export function ArticleHistory({
 
             setSavedToast(true);
             setTimeout(() => setSavedToast(false), 2000);
-            await fetchArticles();
+            triggerRefresh();
 
             const chinese = (currentContent.match(/[\u4e00-\u9fff]/g) || []).length;
             const english = currentContent.replace(/[\u4e00-\u9fff]/g, '').split(/\s+/).filter(Boolean).length;
