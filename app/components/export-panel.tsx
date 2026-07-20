@@ -47,7 +47,7 @@ function markdownToHtml(md: string): string {
   // Tables: simple pipe table support
   html = html.replace(/^\|(.+)\|$/gm, (match) => {
     const cells = match.slice(1, -1).split('|').map(c => c.trim());
-    const sepRe = new RegExp('^[-:\\s]+$');
+    const sepRe = /^[-:\s]+$/;
     if (cells.every(c => sepRe.test(c))) return ''; // skip separator row
     return '<tr>' + cells.map(c => `<td>${c}</td>`).join('') + '</tr>';
   });
