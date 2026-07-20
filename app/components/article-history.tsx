@@ -176,7 +176,7 @@ export function ArticleHistory({
     }, 200);
 
     return () => clearTimeout(timer);
-  }, [fetchArticles, currentArticleId, userId]);
+  }, [shouldAutoSave, currentContent, currentArticleId, userId, fetchArticles]);
 
   const handleDelete = useCallback(
     async (id: string, e: React.MouseEvent) => {
