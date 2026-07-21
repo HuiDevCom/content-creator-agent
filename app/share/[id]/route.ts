@@ -34,6 +34,9 @@ function buildHtmlPage(title: string, bodyHtml: string): string {
   ul,ol{margin:0.6em 0;padding-left:1.5em}
   li{margin:0.3em 0}
   hr{border:none;border-top:2px solid #eee;margin:2em 0}
+  footer{text-align:center;padding:2em 0;color:#888;font-size:14px}
+  footer a{color:#888;text-decoration:none}
+  footer a:hover{color:#555;text-decoration:underline}
   @media(prefers-color-scheme:dark){
     body{background:#0d1117;color:#c9d1d9}
     h1{border-bottom-color:#21262d} h2{border-bottom-color:#21262d}
@@ -47,6 +50,7 @@ function buildHtmlPage(title: string, bodyHtml: string): string {
 </head>
 <body>
 ${bodyHtml}
+<footer><hr><p>© 2026 <a href="https://content-creator.agent.huidev.com/">内容创作 Agent</a></p></footer>
 </body>
 </html>`;
 }
