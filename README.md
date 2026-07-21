@@ -123,4 +123,13 @@ content-creator-agent/
 
 ## 许可证
 
-MIT
+本项目遵循 MIT 开源协议，详细内容请查看 [LICENSE](./LICENSE) 文件。
+
+最初 Fork 自 [TencentEdgeOne/edgeone-makers-template](https://github.com/TencentEdgeOne/edgeone-makers-template)，感谢原作者的贡献。
+
+**版权声明：**
+
+```
+Copyright (c) 2026 Tencent EdgeOne
+Copyright (c) 2026 HuiDevCom
+```
