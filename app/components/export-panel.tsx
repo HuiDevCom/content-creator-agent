@@ -209,6 +209,31 @@ ${html}
     showToast(t.downloadHtml);
   }, [content, showToast, t.downloadHtml]);
 
+  const [isPublishing, setIsPublishing] = useState(false);
+
+  const handlePublishLink = useCallback(async () => {
+    if (!content.trim()) return;
+    setIsPublishing(true);
+    try {
+      const res = await fetch('/publish', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'create', content }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        await navigator.clipboard.writeText(data.url);
+        showToast(t.linkCopied);
+      } else {
+        showToast(data.error || 'Publish failed');
+      }
+    } catch {
+      showToast('Publish failed');
+    } finally {
+      setIsPublishing(false);
+    }
+  }, [content, showToast, t.linkCopied]);
+
   return (
     <Card className="mt-4 relative">
       {toast && (
@@ -247,6 +272,12 @@ ${html}
             <path strokeLinecap="round" strokeLinejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
           </svg>
           {t.downloadHtml}
+        </Button>
+        <Button variant="outline" size="sm" onClick={handlePublishLink} disabled={isPublishing || !content}>
+          <svg className="mr-1.5 h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+          </svg>
+          {isPublishing ? t.publishing : t.publishLink}
         </Button>
       </div>
     </Card>
