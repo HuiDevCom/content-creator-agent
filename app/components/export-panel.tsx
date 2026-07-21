@@ -5,6 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useI18n } from '@/lib/i18n';
 
+// Use configured public URL if available, otherwise fall back to current origin
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : '');
+
 interface ExportPanelProps {
   content: string;
 }
@@ -222,7 +225,8 @@ ${html}
       });
       const data = await res.json();
       if (data.url) {
-        await navigator.clipboard.writeText(data.url);
+        const fullUrl = SITE_URL + data.url;
+        await navigator.clipboard.writeText(fullUrl);
         showToast(t.linkCopied);
       } else {
         showToast(data.error || 'Publish failed');

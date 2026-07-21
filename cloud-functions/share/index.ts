@@ -170,7 +170,7 @@ export async function onRequest(context: any) {
                 metadata: { type: 'published', id },
             });
 
-            const shareUrl = `${origin}/share/${id}`;
+            const shareUrl = `/share/${id}`;
             logger.log('Published:', id, title);
 
             return createResponse({ success: true, id, url: shareUrl });
