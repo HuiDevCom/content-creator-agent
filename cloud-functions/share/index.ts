@@ -1,9 +1,12 @@
 /**
  * Share — EdgeOne Makers Node Function
- * File path cloud-functions/share/index.ts maps to /share
+ * File path cloud-functions/share/index.ts maps to POST /share
  *
- * POST /share { content, title? } → { id, url } — create a share link
- * GET  /share/xxx — serves HTML page at the short path
+ * Actions:
+ *   POST /share { content, title? } → { id, url } — create a share link
+ *   POST /share { action: "get", id }  → { title, html } — retrieve published content
+ *
+ * The GET /share/:id route is handled by Next.js app/share/[id]/route.ts.
  */
 import { createLogger } from '../_logger';
 
@@ -102,51 +105,33 @@ function createResponse(data: any, status = 200) {
     });
 }
 
-function getOrigin(context: any, url: URL): string {
-    const host = context.request?.headers?.get('host');
-    if (host) return `${url.protocol}//${host}`;
-    return url.origin;
-}
-
 export async function onRequest(context: any) {
     const method = context.request?.method || 'GET';
-    const url = new URL(context.request?.url || '');
     const store = context.agent?.store ?? null;
-    const origin = getOrigin(context, url);
 
-    // GET /share/xxx — serve HTML page
-    if (method === 'GET') {
-        // Extract ID from path: /share/abc12345
-        const pathParts = url.pathname.split('/').filter(Boolean);
-        const id = pathParts[1]; // ['share', 'abc12345']
-        if (!id || id.length < 3) {
-            return new Response('Not found', { status: 404 });
-        }
-        if (!store) {
-            return new Response('Store not available', { status: 503 });
-        }
-        try {
-            const messages = await store.getMessages({ conversationId: `published-${id}`, limit: 1, order: 'desc' });
-            if (messages.length === 0) {
-                return new Response('Not found', { status: 404 });
-            }
-            const data = typeof messages[0].content === 'string'
-                ? JSON.parse(messages[0].content)
-                : messages[0].content;
-            const html = buildHtmlPage(data.title || 'Shared Article', data.html);
-            return new Response(html, {
-                status: 200,
-                headers: { 'Content-Type': 'text/html; charset=UTF-8' },
-            });
-        } catch (e: any) {
-            logger.error(e?.message || String(e));
-            return new Response('Internal error', { status: 500 });
-        }
-    }
-
-    // POST /share { content, title? } → { id, url }
+    // Only handle POST—GET /share/:id is served by Next.js route
     if (method === 'POST') {
         const body: Record<string, any> = context.request?.body ?? {};
+
+        // Action: get — retrieve published content by id
+        if (body.action === 'get') {
+            const { id } = body;
+            if (!id) return createResponse({ error: 'Missing id' }, 400);
+            if (!store) return createResponse({ error: 'Store not available' }, 503);
+            try {
+                const messages = await store.getMessages({ conversationId: `published-${id}`, limit: 1, order: 'desc' });
+                if (messages.length === 0) return createResponse({ error: 'Not found' }, 404);
+                const data = typeof messages[0].content === 'string'
+                    ? JSON.parse(messages[0].content)
+                    : messages[0].content;
+                return createResponse({ title: data.title, html: data.html });
+            } catch (e: any) {
+                const msg = e?.message || String(e);
+                logger.error(msg);
+                return createResponse({ error: msg }, 500);
+            }
+        }
+
         const { content, title: inputTitle } = body;
 
         if (!content) {
