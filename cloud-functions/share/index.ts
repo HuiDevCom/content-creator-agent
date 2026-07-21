@@ -1,13 +1,13 @@
 /**
- * Publish — EdgeOne Makers Node Function
- * File path cloud-functions/publish/index.ts maps to /publish
+ * Share — EdgeOne Makers Node Function
+ * File path cloud-functions/share/index.ts maps to /share
  *
- * POST /publish { action: "create", content, title? } → { id, url }
- * GET  /publish?id=xxx → serves HTML page
+ * POST /share { content, title? } → { id, url } — create a share link
+ * GET  /share/xxx — serves HTML page at the short path
  */
 import { createLogger } from '../_logger';
 
-const logger = createLogger('publish');
+const logger = createLogger('share');
 
 function generateId(): string {
     const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -102,16 +102,25 @@ function createResponse(data: any, status = 200) {
     });
 }
 
+function getOrigin(context: any, url: URL): string {
+    const host = context.request?.headers?.get('host');
+    if (host) return `${url.protocol}//${host}`;
+    return url.origin;
+}
+
 export async function onRequest(context: any) {
     const method = context.request?.method || 'GET';
     const url = new URL(context.request?.url || '');
     const store = context.agent?.store ?? null;
+    const origin = getOrigin(context, url);
 
-    // GET /publish?id=xxx → serve HTML page
+    // GET /share/xxx — serve HTML page
     if (method === 'GET') {
-        const id = url.searchParams.get('id');
-        if (!id) {
-            return new Response('Missing id parameter', { status: 400 });
+        // Extract ID from path: /share/abc12345
+        const pathParts = url.pathname.split('/').filter(Boolean);
+        const id = pathParts[1]; // ['share', 'abc12345']
+        if (!id || id.length < 3) {
+            return new Response('Not found', { status: 404 });
         }
         if (!store) {
             return new Response('Store not available', { status: 503 });
@@ -124,7 +133,7 @@ export async function onRequest(context: any) {
             const data = typeof messages[0].content === 'string'
                 ? JSON.parse(messages[0].content)
                 : messages[0].content;
-            const html = buildHtmlPage(data.title || 'Published Article', data.html);
+            const html = buildHtmlPage(data.title || 'Shared Article', data.html);
             return new Response(html, {
                 status: 200,
                 headers: { 'Content-Type': 'text/html; charset=UTF-8' },
@@ -135,12 +144,12 @@ export async function onRequest(context: any) {
         }
     }
 
-    // POST /publish { action: "create", content, title? } → { id, url }
+    // POST /share { content, title? } → { id, url }
     if (method === 'POST') {
         const body: Record<string, any> = context.request?.body ?? {};
-        const { action, content, title: inputTitle } = body;
+        const { content, title: inputTitle } = body;
 
-        if (action !== 'create' || !content) {
+        if (!content) {
             return createResponse({ error: 'Missing content' }, 400);
         }
 
@@ -161,11 +170,10 @@ export async function onRequest(context: any) {
                 metadata: { type: 'published', id },
             });
 
-            const baseUrl = url.origin;
-            const publishUrl = `${baseUrl}/publish?id=${id}`;
+            const shareUrl = `${origin}/share/${id}`;
             logger.log('Published:', id, title);
 
-            return createResponse({ success: true, id, url: publishUrl });
+            return createResponse({ success: true, id, url: shareUrl });
         } catch (e: any) {
             const msg = e?.message || String(e);
             logger.error(msg);

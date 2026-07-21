@@ -215,10 +215,10 @@ ${html}
     if (!content.trim()) return;
     setIsPublishing(true);
     try {
-      const res = await fetch('/publish', {
+      const res = await fetch('/share', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'create', content }),
+        body: JSON.stringify({ content }),
       });
       const data = await res.json();
       if (data.url) {
