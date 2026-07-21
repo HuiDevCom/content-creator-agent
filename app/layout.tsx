@@ -7,6 +7,14 @@ export const metadata: Metadata = {
   title: "内容创作Agent",
   description: "内容创作 AI Agent，支持联网搜索、主题研究、大纲生成、文章写作与 SEO 优化",
   icons: "/favicon.png",
+  openGraph: {
+    title: "内容创作Agent",
+    description: "内容创作 AI Agent，支持联网搜索、主题研究、大纲生成、文章写作与 SEO 优化",
+    url: "https://content-creator.agent.huidev.com",
+    siteName: "内容创作Agent",
+    images: [{ url: "/favicon.png", width: 512, height: 512 }],
+    type: "website",
+  },
 };
 
 export default function RootLayout({
